@@ -43,7 +43,11 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        //
+        $post = Post::find($id);
+        if($post){
+            return $this->apiResponse($post, 'OK', 200);
+        }
+        return $this->apiResponse(null, 'Post Not found', 401);
     }
 
     /**
