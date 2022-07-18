@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Api\ApiResponseTrait;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 
-use App\Http\Controllers\Api\ApiResponseTrait;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
@@ -33,10 +32,17 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        $validation = Validator::make($request->all(), [
+            'title' => 'required|max:255',
+            'body' => 'required'
+        ]);
+        if ($validation->fails())
+            return $this->apiResponse(null, $validation->errors(), 400);
+
         $post = Post::create($request->all());
-        if($post){
+        if($post)
             return $this->apiResponse(new PostResource($post), 'OK', 201);
-        }
+
         return $this->apiResponse(null, 'Post Not found', 400);
     }
 
