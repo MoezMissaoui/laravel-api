@@ -4,12 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Post;
 
+use App\Http\Controllers\Api\ApiResponseTrait;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PostController extends Controller
 {
+    use ApiResponseTrait;
     /**
      * Display a listing of the resource.
      *
@@ -18,8 +21,7 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::all();
-
-        return response($posts,200,["OK"]);
+        return $this->apiResponse($posts, 'OK', 200);
     }
 
     /**
@@ -30,7 +32,7 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        
+        //
     }
 
     /**
