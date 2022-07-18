@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('body');
-            $table->unsignedBigInteger('create_by');
+            $table->unsignedBigInteger('create_by')->nullable();
             $table->foreign('create_by')->references('id')->on('users');
             $table->timestamps();
             $table->softDeletes();
