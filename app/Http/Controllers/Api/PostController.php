@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\PostResource;
 use App\Models\Post;
 
 use App\Http\Controllers\Api\ApiResponseTrait;
@@ -20,7 +21,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
+        $posts = PostResource::collection(Post::all());
         return $this->apiResponse($posts, 'OK', 200);
     }
 
@@ -43,7 +44,7 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        $post = Post::find($id);
+        $post = new PostResource(Post::find($id));
         if($post){
             return $this->apiResponse($post, 'OK', 200);
         }
