@@ -67,9 +67,11 @@ class PostController extends Controller
             return $this->apiResponse(null, $this->validateRequest($request)['message'], 400);
         $post = Post::find($id);
         if(!$post)
-            return $this->apiResponse(new PostResource($post), 'Post Not found', 404);
+            return $this->apiResponse(null, 'Post Not found', 404);
         $post->update($request->all());
-        return $this->apiResponse(null, 'Post Not found', 404);
+        if($post)
+            return $this->apiResponse(new PostResource($post), 'Post updated', 201);
+        return $this->apiResponse(null, 'Post Not updated', 400);
     }
 
     /**
@@ -80,6 +82,11 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post = Post::find($id);
+        if(!$post)
+            return $this->apiResponse(null, 'Post Not found', 404);
+        $post->delete();
+        if($post)
+            return $this->apiResponse(null, 'Post deleted', 200);
     }
 }
