@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Api\ApiResponseTrait;
-use App\Http\Resources\PostResource;
-use App\Models\Post;
-
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PostResource;
+use App\Http\Traits\ApiResponseTrait;
+use App\Http\Traits\PostValidationTrait;
+use App\Models\Post;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
     use ApiResponseTrait;
+    use PostValidationTrait;
     /**
      * Display a listing of the resource.
      *
@@ -32,18 +32,12 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $validation = Validator::make($request->all(), [
-            'title' => 'required|max:255',
-            'body' => 'required'
-        ]);
-        if ($validation->fails())
-            return $this->apiResponse(null, $validation->errors(), 400);
-
+        if(!$this->validateRequest($request)['status'])
+            return $this->apiResponse(null, $this->validateRequest($request)['message'], 400);
         $post = Post::create($request->all());
         if($post)
-            return $this->apiResponse(new PostResource($post), 'OK', 201);
-
-        return $this->apiResponse(null, 'Post Not found', 400);
+            return $this->apiResponse(new PostResource($post), 'Post created', 201);
+        return $this->apiResponse(null, 'Post Not created', 400);
     }
 
     /**
@@ -55,9 +49,8 @@ class PostController extends Controller
     public function show($id)
     {
         $post = Post::find($id);
-        if($post){
+        if($post)
             return $this->apiResponse(new PostResource($post), 'OK', 200);
-        }
         return $this->apiResponse(null, 'Post Not found', 404);
     }
 
@@ -70,7 +63,13 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if(!$this->validateRequest($request)['status'])
+            return $this->apiResponse(null, $this->validateRequest($request)['message'], 400);
+        $post = Post::find($id);
+        if(!$post)
+            return $this->apiResponse(new PostResource($post), 'Post Not found', 404);
+        $post->update($request->all());
+        return $this->apiResponse(null, 'Post Not found', 404);
     }
 
     /**
